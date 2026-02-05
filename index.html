@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>BWC Exchange</title>
-
+    <title>BWC Exchange Submission</title>
 
     <style>
         /* Page background */
@@ -30,6 +29,7 @@
             font-size: 22px;
             margin-bottom: 20px;
             color: #333;
+            font-weight: bold;
         }
 
         /* Label styling */
@@ -73,17 +73,48 @@
     </style>
 </head>
 
+<body>
+
+<div class="container">
+    <div class="title">BWC EXCHANGE SUBMISSION</div>
+
+    <label>Officer ID</label>
+    <input type="text" placeholder="PC, CPL, SGT or SSGT + ID" id="officerId" required>
+
+    <label>BWC number</label>
+    <input type="text" placeholder="3-digit or last 4-digit" id="bwcNo" required>
+
+    <label>Battery (%)</label>
+    <input type="number" placeholder="0 - 100" min="0" max="100" id="battery" required>
+
+    <button onclick="submitData()">Submit</button>
+</div>
+
 <script>
 function submitData() {
-    const officerId = document.querySelector('input[placeholder="Enter ID"]').value;
-    const bwcNo = document.querySelector('input[placeholder="Enter BWC Number"]').value;
-    const battery = document.querySelector('input[placeholder="0 - 100"]').value;
+    // Get values
+    const officerId = document.getElementById("officerId").value.trim();
+    const bwcNo = document.getElementById("bwcNo").value.trim();
+    const battery = document.getElementById("battery").value.trim();
 
+    // Basic validation
     if (!officerId || !bwcNo || !battery) {
         alert("Please fill all fields");
         return;
     }
 
+    if (battery < 0 || battery > 100) {
+        alert("Battery must be between 0 and 100");
+        return;
+    }
+
+    // Optional: check BWC number numeric
+    if (isNaN(bwcNo)) {
+        alert("BWC number must be numeric");
+        return;
+    }
+
+    // Send data to Google Apps Script
     fetch("https://script.google.com/macros/s/AKfycbw8QEoNK2VVA68M73Y8S-aaUlGgLxrPWTVa4wwjGnypg786ePkFDxXcCe70SlND-w/exec", {
         method: "POST",
         body: JSON.stringify({
@@ -98,7 +129,10 @@ function submitData() {
     .then(response => response.text())
     .then(result => {
         alert("Submitted successfully!");
-        document.querySelectorAll("input").forEach(i => i.value = "");
+        // Clear input fields
+        document.getElementById("officerId").value = "";
+        document.getElementById("bwcNo").value = "";
+        document.getElementById("battery").value = "";
     })
     .catch(error => {
         alert("Error submitting data");
@@ -106,25 +140,6 @@ function submitData() {
     });
 }
 </script>
-
-    
-<body>
-
-<div class="container">
-    <div class="title"><strong>BWC EXCHANGE SUBMISSION</strong></div>
-
-    <label>Officer ID</label>
-    <input type="text" placeholder="PC, CPL, SGT or SSGT + ID">
-
-    <label>BWC number</label>
-    <input type="text" placeholder="3-digit or last 4-digit">
-
-    <label>Battery(%)</label>
-    <input type="number" placeholder="0 - 100" min="0" max="100">
-
-    <button onclick="submitData()">Submit</button>
-
-</div>
 
 </body>
 </html>
