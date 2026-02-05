@@ -73,13 +73,48 @@
     </style>
 </head>
 
+<script>
+function submitData() {
+    const officerId = document.querySelector('input[placeholder="Enter ID"]').value;
+    const bwcNo = document.querySelector('input[placeholder="Enter BWC Number"]').value;
+    const battery = document.querySelector('input[placeholder="0 - 100"]').value;
+
+    if (!officerId || !bwcNo || !battery) {
+        alert("Please fill all fields");
+        return;
+    }
+
+    fetch("https://script.google.com/macros/s/AKfycbw8QEoNK2VVA68M73Y8S-aaUlGgLxrPWTVa4wwjGnypg786ePkFDxXcCe70SlND-w/exec", {
+        method: "POST",
+        body: JSON.stringify({
+            officerId: officerId,
+            bwcNo: bwcNo,
+            battery: battery
+        }),
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+    .then(response => response.text())
+    .then(result => {
+        alert("Submitted successfully!");
+        document.querySelectorAll("input").forEach(i => i.value = "");
+    })
+    .catch(error => {
+        alert("Error submitting data");
+        console.error(error);
+    });
+}
+</script>
+
+    
 <body>
 
 <div class="container">
     <div class="title"><strong>BWC EXCHANGE SUBMISSION</strong></div>
 
     <label>Officer ID</label>
-    <input type="text" placeholder="PC, CPL, SGT or SSGT">
+    <input type="text" placeholder="PC, CPL, SGT or SSGT + ID">
 
     <label>BWC number</label>
     <input type="text" placeholder="3-digit or last 4-digit">
@@ -87,7 +122,8 @@
     <label>Battery(%)</label>
     <input type="number" placeholder="0 - 100" min="0" max="100">
 
-    <button>Submit</button>
+    <button onclick="submitData()">Submit</button>
+
 </div>
 
 </body>
