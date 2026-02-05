@@ -1,54 +1,90 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>BWC Exchange</title>
 
     <style>
+        /* Page background */
         body {
             font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
+            background: linear-gradient(to right, #eef2f3, #d9e2ec);
+            margin: 0;
+            padding: 0;
         }
 
-        .box {
-            width: 300px;
-            margin: 80px auto;
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
+        /* Center container */
+        .container {
+            max-width: 380px;
+            margin: 100px auto;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
 
+        /* Title */
+        .title {
+            text-align: center;
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        /* Label styling */
         label {
             display: block;
-            margin-top: 15px;
+            margin-bottom: 6px;
             font-weight: bold;
+            color: #555;
         }
 
+        /* Input boxes */
         input {
             width: 100%;
-            padding: 8px;
-            margin-top: 5px;
+            padding: 10px;
+            margin-bottom: 18px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 14px;
         }
 
+        input:focus {
+            outline: none;
+            border-color: #4a90e2;
+        }
+
+        /* Submit button */
         button {
             width: 100%;
-            margin-top: 20px;
-            padding: 10px;
+            padding: 12px;
+            background-color: #4a90e2;
+            color: white;
             font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #357abd;
         }
     </style>
 </head>
 
 <body>
 
-<div class="box">
+<div class="container">
+    <div class="title">BWC Exchange</div>
+
     <label>ID</label>
-    <input type="text">
+    <input type="text" placeholder="Enter ID">
 
     <label>BWC No.</label>
-    <input type="text">
+    <input type="text" placeholder="Enter BWC Number">
 
     <label>Battery (%)</label>
-    <input type="number">
+    <input type="number" placeholder="0 - 100" min="0" max="100">
 
     <button>Submit</button>
 </div>
