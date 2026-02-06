@@ -3,48 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <title>BWC Exchange Submission</title>
-
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(to right, #eef2f3, #d9e2ec);
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 380px;
-      margin: 100px auto;
-      background: #ffffff;
-      padding: 25px;
-      border-radius: 10px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    }
-    .title {
-      text-align: center;
-      font-size: 22px;
-      margin-bottom: 20px;
-      color: #333;
-      font-weight: bold;
-    }
-    label { display: block; margin-bottom: 6px; font-weight: bold; color: #555; }
-    input {
-      width: 100%; padding: 10px; margin-bottom: 18px;
-      border-radius: 5px; border: 1px solid #ccc; font-size: 14px;
-    }
-    button {
-      width: 100%; padding: 12px; background-color: #4a90e2;
-      color: white; font-size: 16px; border: none; border-radius: 6px;
-      cursor: pointer;
-    }
-    button:hover { background-color: #357abd; }
-    .message { margin-top: 15px; text-align: center; font-weight: bold; display: none; }
-    .error { color: red; }
-    .success { color: green; }
-    .footer { margin-top: 25px; text-align: center; font-size: 13px; color: darkblue; }
+    body { font-family: Arial,sans-serif; background: linear-gradient(to right,#eef2f3,#d9e2ec); margin:0; padding:0; }
+    .container { max-width:380px; margin:100px auto; background:#fff; padding:25px; border-radius:10px; box-shadow:0 8px 20px rgba(0,0,0,0.15);}
+    .title { text-align:center; font-size:22px; margin-bottom:20px; color:#333; font-weight:bold;}
+    label { display:block; margin-bottom:6px; font-weight:bold; color:#555;}
+    input { width:100%; padding:10px; margin-bottom:18px; border-radius:5px; border:1px solid #ccc; font-size:14px;}
+    button { width:100%; padding:12px; background-color:#4a90e2; color:white; font-size:16px; border:none; border-radius:6px; cursor:pointer;}
+    button:hover { background-color:#357abd; }
+    .message { margin-top:15px; text-align:center; font-weight:bold; display:none;}
+    .error { color:red;}
+    .success { color:green;}
+    .footer { margin-top:25px; text-align:center; font-size:13px; color:darkblue;}
   </style>
 </head>
 <body>
-
 <div class="container">
   <div class="title">BWC EXCHANGE SUBMISSION</div>
 
@@ -60,7 +33,6 @@
   <button onclick="submitData()">Submit</button>
 
   <div id="message" class="message"></div>
-
   <div class="footer">This application was created by Htet Aung Lynn.</div>
 </div>
 
@@ -72,54 +44,45 @@ function submitData() {
   const messageBox = document.getElementById("message");
   messageBox.style.display = "none";
 
-  if (!officerId || !bwcNo || !battery) {
-    showMessage("Please fill all fields.", "error");
-    return;
-  }
-  if (battery < 0 || battery > 100) {
-    showMessage("Battery must be between 0 and 100.", "error");
-    return;
-  }
+  if(!officerId || !bwcNo || !battery) { showMessage("Please fill all fields.","error"); return;}
+  if(battery <0 || battery>100){ showMessage("Battery must be between 0 and 100.","error"); return;}
 
-  // ✅ Send data to Google Apps Script Web App
   fetch("https://script.google.com/macros/s/AKfycbz_DY-DgIA7B4EgV8-bwmHH37Id3u1BseKS62e-Qkv_ojwgo_NlXL5jZyWS_qwSsp0/exec", {
-      method: "POST",
-      mode: "cors", // allow cross-origin
+      method:"POST",
+      mode:"cors",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ officerId, bwcNo, battery })
   })
-  .then(res => res.text()) // Apps Script returns plain text
+  .then(res => res.text())
   .then(text => {
-      const status = text.trim().toLowerCase(); // convert to lowercase for safety
-      if (status === "duplicate") {
-          showMessage("This ID has been already submitted.", "error");
-      } else if (status === "success") {
-          showMessage("Successfully submitted.", "success");
+      const status = text.trim().toLowerCase();
+      if(status === "duplicate") {
+          showMessage("This ID has been already submitted.","error");
+      } else if(status === "success") {
+          showMessage("Successfully submitted.","success");
       } else {
-          showMessage("Submission failed. Try again.", "error");
+          showMessage("Submission failed. Try again.","error");
       }
 
-      // ✅ Clear all input boxes after submission
+      // Clear all text boxes
       document.getElementById("officerId").value = "";
       document.getElementById("bwcNo").value = "";
       document.getElementById("battery").value = "";
   })
   .catch(() => {
-      showMessage("Submission failed. Try again.", "error");
-      // Clear input boxes on error too
+      showMessage("Submission failed. Try again.","error");
       document.getElementById("officerId").value = "";
       document.getElementById("bwcNo").value = "";
       document.getElementById("battery").value = "";
   });
 }
 
-function showMessage(text, type) {
+function showMessage(text,type){
   const box = document.getElementById("message");
-  box.textContent = text;
-  box.className = "message " + type;
-  box.style.display = "block";
+  box.textContent=text;
+  box.className="message "+type;
+  box.style.display="block";
 }
 </script>
-
 </body>
 </html>
