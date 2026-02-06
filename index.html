@@ -114,9 +114,6 @@ function submitData() {
     const officerId = document.getElementById("officerId").value.trim();
     const bwcNo = document.getElementById("bwcNo").value.trim();
     const battery = document.getElementById("battery").value.trim();
-    const messageBox = document.getElementById("message");
-
-    messageBox.style.display = "none";
 
     if (!officerId || !bwcNo || !battery) {
         showMessage("Please fill all fields.", "error");
@@ -130,28 +127,26 @@ function submitData() {
 
     fetch("https://script.google.com/macros/s/AKfycbyGvqs8g-S4Iy9xeTYW5cgJVAoB05pyg1ctaReifNjCqfTYjIORg8AH0c6L1zmwBMs/exec", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        mode: "no-cors",
+        headers: {
+            "Content-Type": "application/json"
+        },
         body: JSON.stringify({
             officerId,
             bwcNo,
             battery
         })
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status === "duplicate") {
-            showMessage("This ID has been already submitted.", "error");
-        } else if (data.status === "success") {
-            showMessage("Successfully submitted.", "success");
-            alert("Successfully submitted.");
+    .then(() => {
+        showMessage("Successfully submitted.", "success");
+        alert("Successfully submitted.");
 
-            document.getElementById("officerId").value = "";
-            document.getElementById("bwcNo").value = "";
-            document.getElementById("battery").value = "";
-        }
+        document.getElementById("officerId").value = "";
+        document.getElementById("bwcNo").value = "";
+        document.getElementById("battery").value = "";
     })
     .catch(() => {
-        showMessage("Submission failed. Please try again.", "error");
+        showMessage("Network error. Please try again.", "error");
     });
 }
 
@@ -162,6 +157,7 @@ function showMessage(text, type) {
     box.style.display = "block";
 }
 </script>
+
 
 </body>
 </html>
