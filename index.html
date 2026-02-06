@@ -117,28 +117,28 @@ function submitData() {
     // Send data to Google Apps Script
     fetch("https://script.google.com/macros/s/AKfycbw8QEoNK2VVA68M73Y8S-aaUlGgLxrPWTVa4wwjGnypg786ePkFDxXcCe70SlND-w/exec", {
         method: "POST",
+        mode: "no-cors",
+        headers: {
+            "Content-Type": "application/json"
+        },
         body: JSON.stringify({
             officerId: officerId,
             bwcNo: bwcNo,
             battery: battery
-        }),
-        headers: {
-            "Content-Type": "application/json"
-        }
+        })
     })
-    .then(response => response.text())
-    .then(result => {
+    .then(() => {
         alert("Submitted successfully!");
+    
         // Clear input fields
         document.getElementById("officerId").value = "";
         document.getElementById("bwcNo").value = "";
         document.getElementById("battery").value = "";
     })
-    .catch(error => {
-        alert("Error submitting data");
-        console.error(error);
+    .catch(() => {
+        alert("Submission failed. Please try again.");
     });
-}
+
 </script>
 
 </body>
