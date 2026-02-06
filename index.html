@@ -45,11 +45,6 @@
             font-size: 14px;
         }
 
-        input:focus {
-            outline: none;
-            border-color: #4a90e2;
-        }
-
         button {
             width: 100%;
             padding: 12px;
@@ -64,6 +59,30 @@
         button:hover {
             background-color: #357abd;
         }
+
+        /* Message area */
+        .message {
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .success {
+            color: green;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 13px;
+            color: darkblue;
+        }
     </style>
 </head>
 
@@ -73,15 +92,21 @@
     <div class="title">BWC EXCHANGE SUBMISSION</div>
 
     <label>Officer ID</label>
-    <input type="text" id="officerId" placeholder="PC, CPL, SGT or SSGT + ID" required>
+    <input type="text" id="officerId" placeholder="PC, CPL, SGT or SSGT + ID">
 
     <label>BWC number</label>
-    <input type="text" id="bwcNo" placeholder="3-digit or last 4-digit" required>
+    <input type="text" id="bwcNo" placeholder="3-digit or last 4-digit">
 
     <label>Battery (%)</label>
-    <input type="number" id="battery" placeholder="0 - 100" min="0" max="100" required>
+    <input type="number" id="battery" min="0" max="100" placeholder="0 - 100">
 
     <button onclick="submitData()">Submit</button>
+
+    <div id="message" class="message"></div>
+
+    <div class="footer">
+        This application was created by Htet Aung Lynn.
+    </div>
 </div>
 
 <script>
@@ -89,43 +114,52 @@ function submitData() {
     const officerId = document.getElementById("officerId").value.trim();
     const bwcNo = document.getElementById("bwcNo").value.trim();
     const battery = document.getElementById("battery").value.trim();
+    const messageBox = document.getElementById("message");
+
+    messageBox.style.display = "none";
 
     if (!officerId || !bwcNo || !battery) {
-        alert("Please fill all fields");
+        showMessage("Please fill all fields.", "error");
         return;
     }
 
     if (battery < 0 || battery > 100) {
-        alert("Battery must be between 0 and 100");
-        return;
-    }
-
-    if (isNaN(bwcNo)) {
-        alert("BWC number must be numeric");
+        showMessage("Battery must be between 0 and 100.", "error");
         return;
     }
 
     fetch("https://script.google.com/macros/s/AKfycbw8QEoNK2VVA68M73Y8S-aaUlGgLxrPWTVa4wwjGnypg786ePkFDxXcCe70SlND-w/exec", {
         method: "POST",
-        mode: "no-cors",
-        headers: {
-            "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            officerId: officerId,
-            bwcNo: bwcNo,
-            battery: battery
+            officerId,
+            bwcNo,
+            battery
         })
     })
-    .then(() => {
-        alert("Submitted successfully!");
-        document.getElementById("officerId").value = "";
-        document.getElementById("bwcNo").value = "";
-        document.getElementById("battery").value = "";
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === "duplicate") {
+            showMessage("This ID has been already submitted.", "error");
+        } else if (data.status === "success") {
+            showMessage("Successfully submitted.", "success");
+            alert("Successfully submitted.");
+
+            document.getElementById("officerId").value = "";
+            document.getElementById("bwcNo").value = "";
+            document.getElementById("battery").value = "";
+        }
     })
     .catch(() => {
-        alert("Submission failed. Please try again.");
+        showMessage("Submission failed. Please try again.", "error");
     });
+}
+
+function showMessage(text, type) {
+    const box = document.getElementById("message");
+    box.textContent = text;
+    box.className = "message " + type;
+    box.style.display = "block";
 }
 </script>
 
