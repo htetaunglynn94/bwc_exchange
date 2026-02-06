@@ -81,26 +81,4 @@ function submitData() {
     return;
   }
 
-  // Call Apps Script function
-  google.script.run.withSuccessHandler(function(response) {
-    if (response.status === "duplicate") {
-      showMessage("This ID has been already submitted.", "error");
-    } else if (response.status === "success") {
-      showMessage("Successfully submitted.", "success");
-      document.getElementById("officerId").value = "";
-      document.getElementById("bwcNo").value = "";
-      document.getElementById("battery").value = "";
-    }
-  }).submitData(officerId, bwcNo, battery);
-}
-
-function showMessage(text, type) {
-  const box = document.getElementById("message");
-  box.textContent = text;
-  box.className = "message " + type;
-  box.style.display = "block";
-}
-</script>
-
-</body>
-</html>
+  google.script.run.withSuccessHandler(function
