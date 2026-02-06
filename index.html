@@ -44,44 +44,36 @@ function submitData() {
   const messageBox = document.getElementById("message");
   messageBox.style.display = "none";
 
-  if(!officerId || !bwcNo || !battery) { showMessage("Please fill all fields.","error"); return;}
-  if(battery <0 || battery>100){ showMessage("Battery must be between 0 and 100.","error"); return;}
+  if (!officerId || !bwcNo || !battery) {
+    showMessage("Please fill all fields.", "error");
+    return;
+  }
 
-  fetch("https://script.google.com/macros/s/AKfycbz_DY-DgIA7B4EgV8-bwmHH37Id3u1BseKS62e-Qkv_ojwgo_NlXL5jZyWS_qwSsp0/exec", {
-      method:"POST",
-      mode:"cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ officerId, bwcNo, battery })
-  })
-  .then(res => res.text())
-  .then(text => {
-      const status = text.trim().toLowerCase();
-      if(status === "duplicate") {
-          showMessage("This ID has been already submitted.","error");
-      } else if(status === "success") {
-          showMessage("Successfully submitted.","success");
-      } else {
-          showMessage("Submission failed. Try again.","error");
-      }
+  if (battery < 0 || battery > 100) {
+    showMessage("Battery must be between 0 and 100.", "error");
+    return;
+  }
 
-      // Clear all text boxes
-      document.getElementById("officerId").value = "";
-      document.getElementById("bwcNo").value = "";
-      document.getElementById("battery").value = "";
-  })
-  .catch(() => {
-      showMessage("Submission failed. Try again.","error");
-      document.getElementById("officerId").value = "";
-      document.getElementById("bwcNo").value = "";
-      document.getElementById("battery").value = "";
-  });
+  // Call Apps Script backend
+  google.script.run.withSuccessHandler(function(response) {
+    if (response.status === "duplicate") {
+      showMessage("This ID has been already submitted.", "error");
+    } else if (response.status === "success") {
+      showMessage("Successfully submitted.", "success");
+    }
+
+    // Clear all text boxes
+    document.getElementById("officerId").value = "";
+    document.getElementById("bwcNo").value = "";
+    document.getElementById("battery").value = "";
+  }).submitData(officerId, bwcNo, battery);
 }
 
-function showMessage(text,type){
+function showMessage(text, type) {
   const box = document.getElementById("message");
-  box.textContent=text;
-  box.className="message "+type;
-  box.style.display="block";
+  box.textContent = text;
+  box.className = "message " + type;
+  box.style.display = "block";
 }
 </script>
 </body>
