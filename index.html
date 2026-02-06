@@ -44,36 +44,50 @@ function submitData() {
   const messageBox = document.getElementById("message");
   messageBox.style.display = "none";
 
-  if (!officerId || !bwcNo || !battery) {
-    showMessage("Please fill all fields.", "error");
+  if(!officerId || !bwcNo || !battery) {
+    showMessage("Please fill all fields.","error");
+    return;
+  }
+  if(battery < 0 || battery > 100) {
+    showMessage("Battery must be between 0 and 100.","error");
     return;
   }
 
-  if (battery < 0 || battery > 100) {
-    showMessage("Battery must be between 0 and 100.", "error");
-    return;
-  }
+  fetch("https://script.google.com/macros/s/AKfycbxpYOiLyOxTOMUxzWB5CYdaT3Y6HYwZ2KF6GhuQGY_jN04uBQsmQLncLqcZ96K2ZOw/exec", {
+      method: "POST",
+      mode: "cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ officerId, bwcNo, battery })
+  })
+  .then(res => res.text())
+  .then(text => {
+      const status = text.trim().toLowerCase();
+      if(status === "duplicate") {
+          showMessage("This ID has been already submitted.","error");
+      } else if(status === "success") {
+          showMessage("Successfully submitted.","success");
+      } else {
+          showMessage("Submission failed. Try again.","error");
+      }
 
-  // Call Apps Script backend
-  google.script.run.withSuccessHandler(function(response) {
-    if (response.status === "duplicate") {
-      showMessage("This ID has been already submitted.", "error");
-    } else if (response.status === "success") {
-      showMessage("Successfully submitted.", "success");
-    }
-
-    // Clear all text boxes
-    document.getElementById("officerId").value = "";
-    document.getElementById("bwcNo").value = "";
-    document.getElementById("battery").value = "";
-  }).submitData(officerId, bwcNo, battery);
+      // Clear all text boxes
+      document.getElementById("officerId").value = "";
+      document.getElementById("bwcNo").value = "";
+      document.getElementById("battery").value = "";
+  })
+  .catch(() => {
+      showMessage("Submission failed. Try again.","error");
+      document.getElementById("officerId").value = "";
+      document.getElementById("bwcNo").value = "";
+      document.getElementById("battery").value = "";
+  });
 }
 
-function showMessage(text, type) {
+function showMessage(text,type){
   const box = document.getElementById("message");
   box.textContent = text;
-  box.className = "message " + type;
-  box.style.display = "block";
+  box.className = "message "+type;
+  box.style.display="block";
 }
 </script>
 </body>
