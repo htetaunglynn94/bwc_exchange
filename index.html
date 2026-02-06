@@ -5,7 +5,6 @@
     <title>BWC Exchange Submission</title>
 
     <style>
-        /* Page background */
         body {
             font-family: Arial, sans-serif;
             background: linear-gradient(to right, #eef2f3, #d9e2ec);
@@ -13,7 +12,6 @@
             padding: 0;
         }
 
-        /* Center container */
         .container {
             max-width: 380px;
             margin: 100px auto;
@@ -23,7 +21,6 @@
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
 
-        /* Title */
         .title {
             text-align: center;
             font-size: 22px;
@@ -32,7 +29,6 @@
             font-weight: bold;
         }
 
-        /* Label styling */
         label {
             display: block;
             margin-bottom: 6px;
@@ -40,7 +36,6 @@
             color: #555;
         }
 
-        /* Input boxes */
         input {
             width: 100%;
             padding: 10px;
@@ -55,7 +50,6 @@
             border-color: #4a90e2;
         }
 
-        /* Submit button */
         button {
             width: 100%;
             padding: 12px;
@@ -79,25 +73,23 @@
     <div class="title">BWC EXCHANGE SUBMISSION</div>
 
     <label>Officer ID</label>
-    <input type="text" placeholder="PC, CPL, SGT or SSGT + ID" id="officerId" required>
+    <input type="text" id="officerId" placeholder="PC, CPL, SGT or SSGT + ID" required>
 
     <label>BWC number</label>
-    <input type="text" placeholder="3-digit or last 4-digit" id="bwcNo" required>
+    <input type="text" id="bwcNo" placeholder="3-digit or last 4-digit" required>
 
     <label>Battery (%)</label>
-    <input type="number" placeholder="0 - 100" min="0" max="100" id="battery" required>
+    <input type="number" id="battery" placeholder="0 - 100" min="0" max="100" required>
 
     <button onclick="submitData()">Submit</button>
 </div>
 
 <script>
 function submitData() {
-    // Get values
     const officerId = document.getElementById("officerId").value.trim();
     const bwcNo = document.getElementById("bwcNo").value.trim();
     const battery = document.getElementById("battery").value.trim();
 
-    // Basic validation
     if (!officerId || !bwcNo || !battery) {
         alert("Please fill all fields");
         return;
@@ -108,13 +100,11 @@ function submitData() {
         return;
     }
 
-    // Optional: check BWC number numeric
     if (isNaN(bwcNo)) {
         alert("BWC number must be numeric");
         return;
     }
 
-    // Send data to Google Apps Script
     fetch("https://script.google.com/macros/s/AKfycbw8QEoNK2VVA68M73Y8S-aaUlGgLxrPWTVa4wwjGnypg786ePkFDxXcCe70SlND-w/exec", {
         method: "POST",
         mode: "no-cors",
@@ -129,8 +119,6 @@ function submitData() {
     })
     .then(() => {
         alert("Submitted successfully!");
-    
-        // Clear input fields
         document.getElementById("officerId").value = "";
         document.getElementById("bwcNo").value = "";
         document.getElementById("battery").value = "";
@@ -138,7 +126,7 @@ function submitData() {
     .catch(() => {
         alert("Submission failed. Please try again.");
     });
-
+}
 </script>
 
 </body>
