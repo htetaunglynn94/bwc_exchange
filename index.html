@@ -37,6 +37,8 @@
 </div>
 
 <script>
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxP_s8uYc72JyNJnQyZR8I2JbLCy6qRh82FoSfzDnogoTfs6J4yKSaQDkXqKGlqULY/exec";
+
 function submitData() {
   const officerId = document.getElementById("officerId").value.trim();
   const bwcNo = document.getElementById("bwcNo").value.trim();
@@ -44,27 +46,20 @@ function submitData() {
   const messageBox = document.getElementById("message");
   messageBox.style.display = "none";
 
-  if(!officerId || !bwcNo || !battery) {
-    showMessage("Please fill all fields.","error");
-    return;
-  }
-  if(battery < 0 || battery > 100) {
-    showMessage("Battery must be between 0 and 100.","error");
-    return;
-  }
+  if(!officerId || !bwcNo || !battery) { showMessage("Please fill all fields.","error"); return;}
+  if(battery < 0 || battery > 100){ showMessage("Battery must be between 0 and 100.","error"); return;}
 
-  fetch("https://script.google.com/macros/s/AKfycbxpYOiLyOxTOMUxzWB5CYdaT3Y6HYwZ2KF6GhuQGY_jN04uBQsmQLncLqcZ96K2ZOw/exec", {
-      method: "POST",
-      mode: "cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ officerId, bwcNo, battery })
+  fetch(WEB_APP_URL, {
+    method:"POST",
+    mode:"cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ officerId, bwcNo, battery })
   })
-  .then(res => res.text())
-  .then(text => {
-      const status = text.trim().toLowerCase();
-      if(status === "duplicate") {
+  .then(res => res.json())
+  .then(data => {
+      if(data.status === "duplicate") {
           showMessage("This ID has been already submitted.","error");
-      } else if(status === "success") {
+      } else if(data.status === "success") {
           showMessage("Successfully submitted.","success");
       } else {
           showMessage("Submission failed. Try again.","error");
@@ -85,8 +80,8 @@ function submitData() {
 
 function showMessage(text,type){
   const box = document.getElementById("message");
-  box.textContent = text;
-  box.className = "message "+type;
+  box.textContent=text;
+  box.className="message "+type;
   box.style.display="block";
 }
 </script>
