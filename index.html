@@ -1,93 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>BWC Exchange Submission</title>
-  <style>
-    body { font-family: Arial,sans-serif; background: linear-gradient(to right,#eef2f3,#d9e2ec); margin:0; padding:0; }
-    .container { max-width:380px; margin:100px auto; background:#fff; padding:25px; border-radius:10px; box-shadow:0 8px 20px rgba(0,0,0,0.15);}
-    .title { text-align:center; font-size:22px; margin-bottom:20px; color:#333; font-weight:bold;}
-    label { display:block; margin-bottom:6px; font-weight:bold; color:#555;}
-    input { width:100%; padding:10px; margin-bottom:18px; border-radius:5px; border:1px solid #ccc; font-size:14px;}
-    button { width:100%; padding:12px; background-color:#4a90e2; color:white; font-size:16px; border:none; border-radius:6px; cursor:pointer;}
-    button:hover { background-color:#357abd; }
-    .message { margin-top:15px; text-align:center; font-weight:bold; display:none;}
-    .error { color:red;}
-    .success { color:green;}
-    .footer { margin-top:25px; text-align:center; font-size:13px; color:darkblue;}
-  </style>
+<meta charset="UTF-8">
+<title>BWC Exchange Submission</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to right, #eef2f3, #d9e2ec);
+}
+.container {
+  max-width: 380px;
+  margin: 100px auto;
+  background: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+.title {
+  text-align: center;
+  font-size: 22px;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 18px;
+}
+button {
+  width: 100%;
+  padding: 12px;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+.message {
+  margin-top: 15px;
+  text-align: center;
+  font-weight: bold;
+  display: none;
+}
+.error { color: red; }
+.success { color: green; }
+.footer {
+  margin-top: 25px;
+  text-align: center;
+  font-size: 13px;
+  color: darkblue;
+}
+</style>
 </head>
+
 <body>
 <div class="container">
   <div class="title">BWC EXCHANGE SUBMISSION</div>
 
   <label>Officer ID</label>
-  <input type="text" id="officerId" placeholder="PC, CPL, SGT or SSGT + ID">
+  <input type="text" id="officerId">
 
-  <label>BWC number</label>
-  <input type="text" id="bwcNo" placeholder="3-digit or last 4-digit">
+  <label>BWC Number</label>
+  <input type="text" id="bwcNo">
 
   <label>Battery (%)</label>
-  <input type="number" id="battery" min="0" max="100" placeholder="0 - 100">
+  <input type="number" id="battery" min="0" max="100">
 
   <button onclick="submitData()">Submit</button>
 
   <div id="message" class="message"></div>
-  <div class="footer">This application was created by Htet Aung Lynn.</div>
+
+  <div class="footer">
+    This application was created by Htet Aung Lynn.
+  </div>
 </div>
 
 <script>
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxcQO5dIsl9bLM3UiJGock8WLtPoYv0DZQNjL0R9apBq1gDxh6lGsKNBPJxcSbV64g/exec";
-
 function submitData() {
   const officerId = document.getElementById("officerId").value.trim();
   const bwcNo = document.getElementById("bwcNo").value.trim();
   const battery = document.getElementById("battery").value.trim();
-  const messageBox = document.getElementById("message");
-  messageBox.style.display = "none";
+  const msg = document.getElementById("message");
 
-  if(!officerId || !bwcNo || !battery) { showMessage("Please fill all fields.","error"); return;}
-  if(battery < 0 || battery > 100){ showMessage("Battery must be between 0 and 100.","error"); return;}
+  msg.style.display = "none";
 
-  fetch(WEB_APP_URL, {
-    method:"POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ officerId, bwcNo, battery })
-})
-.then(res => res.text())  // <-- use text() instead of json()
-.then(text => {
-    let data;
-    try {
-        data = JSON.parse(text);
-    } catch {
-        showMessage("Submission failed. Try again.", "error");
-        return;
-    }
+  if (!officerId || !bwcNo || !battery) {
+    showMessage("Please fill all fields.", "error");
+    return;
+  }
 
-    if(data.status === "duplicate") {
-        showMessage("This ID has been already submitted.","error");
-    } else if(data.status === "success") {
-        showMessage("Successfully submitted.","success");
-    } else {
-        showMessage("Submission failed. Try again.","error");
-    }
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (res.status === "duplicate") {
+        showMessage("This ID has been already submitted.", "error");
+      } else {
+        showMessage("Successfully submitted.", "success");
+        alert("Successfully submitted.");
+      }
 
-    // Clear text boxes
-    document.getElementById("officerId").value = "";
-    document.getElementById("bwcNo").value = "";
-    document.getElementById("battery").value = "";
-})
-.catch(() => {
-    showMessage("Submission failed. Try again.","error");
-});
-
+      // Clear fields every time
+      document.getElementById("officerId").value = "";
+      document.getElementById("bwcNo").value = "";
+      document.getElementById("battery").value = "";
+    })
+    .submitData(officerId, bwcNo, battery);
 }
 
-function showMessage(text,type){
+function showMessage(text, type) {
   const box = document.getElementById("message");
-  box.textContent=text;
-  box.className="message "+type;
-  box.style.display="block";
+  box.textContent = text;
+  box.className = "message " + type;
+  box.style.display = "block";
 }
 </script>
 </body>
